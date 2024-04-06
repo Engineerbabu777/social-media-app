@@ -1,11 +1,15 @@
 import Card from './Cart'
 import Avatar from './Avatar'
 import ClickOutHandler from 'react-clickout-handler'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import Link from 'next/link'
+import ReactTimeAgo from 'react-time-ago'
+import { UserContext } from '@/context/userContext'
 
-export default function PostCard ({ content ,profiles:profile}: { content: string,profiles:any }) {
+export default function PostCard ({ content ,profiles:profile,created_at}: {created_at:any, content: string,profiles:any }) {
   const [showDropDown, setShowDropDown] = useState < boolean > (false)
+
+  const {profile:myProfile} = useContext(UserContext);
 
   return (
     <Card>
@@ -25,7 +29,9 @@ export default function PostCard ({ content ,profiles:profile}: { content: strin
             </Link>{' '}
             shared a <span className='text-[#2191FA]'>album</span>
           </p>
-          <p className='text-sm text-gray-400'>2 months ago</p>
+          <p className='text-sm text-gray-400'>
+            <ReactTimeAgo date={created_at} />
+          </p>
         </div>
         z
         <div>
@@ -250,7 +256,7 @@ export default function PostCard ({ content ,profiles:profile}: { content: strin
       {/* COMMENTS !! */}
       <div className='mt-2 flex gap-3'>
         <div className=''>
-          <Avatar />
+          <Avatar url={myProfile?.avatar}/>
         </div>
         <div className='grow relative border rounded-full '>
           <textarea

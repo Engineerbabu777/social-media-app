@@ -1,32 +1,20 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Avatar from "./Avatar";
 import Card from "./Cart";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { UserContext } from "@/context/userContext";
 export default function PostFormCard({onPost}:any) {
 	const supabase = useSupabaseClient();
 	const session = useSession();
 
-	const [profile, setProfile] = useState<any>(null);
 	const [content, setContent] = useState("");
 
-	useEffect(() => {
-		// session.user.id
-		supabase
-			.from("profiles")
-			.select("")
-			.eq("id", session.user.id)
-			.then((res: any) => {
-				if (res?.data?.length) {
-					setProfile(res.data[0]);
-				}
-				console.log({ session: session.user.id });
-				console.log(res);
-			});
-	}, []);
+    const {profile} = useContext(UserContext)
 
-    // if (!profile){
-    //     return "waiting for profile...";
-    // }
+
+    if (!profile){
+        return "waiting for profile...";
+    }
 
     const handleClickCreate = async() => {
         console.log({
@@ -55,7 +43,7 @@ export default function PostFormCard({onPost}:any) {
 				<textarea
 					className="grow p-3 outline-none border-[#2191FA] border rounded-md"
 					placeholder={`What's in your mind ${
-						profile?.name.split(" ")[0] || "anonymous"
+						profile?.name?.split(" ")[0] || "anonymous"
 					}?`}
 					value={content}
 					onChange={(e: any) => setContent(e.target.value)}
