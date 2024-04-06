@@ -8,6 +8,7 @@ export default function PostFormCard({onPost}:any) {
 	const session = useSession();
 
 	const [content, setContent] = useState("");
+	const [upload, setuploads] = useState([]);
 
     const {profile} = useContext(UserContext)
 
@@ -33,6 +34,18 @@ export default function PostFormCard({onPost}:any) {
         })
     }
 
+	const addPhotos = (event:any) => {
+           const files = event.target.files;
+		   for (const file of files) {
+               const newName = Date.now()+file.name
+			   supabase.storage.from("photos").upload(newName,file)
+			   .then(result => {
+				const url = process.env.NEXT_PUBLIC_SUPABASE_URL + '/storage/v1/object/public/photos/' + result.data.path;
+				setUploads(prevUploads =>[...prevUploads,url]);
+			   })
+		   }
+	}
+
 	return (
 		<Card>
 			{/* TOP!! */}
@@ -50,7 +63,31 @@ export default function PostFormCard({onPost}:any) {
 				/>
 			</div>
 
-			<div className="flex gap-3 mt-2 items-center">
+			{/* show! */}
+			{uploads.length >0}
+
+			<div className="flex gap-3 mt-2 items-center"><div className="">
+					<label type="button" className="flex items-center">
+						<input type="file" className="hidden" multiple onChange={addPhotos}/>
+						<span className="">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								className="w-5 h-5"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+								/>
+							</svg>
+						</span>
+						Photos
+					</label>
+				</div>
 				<div className="">
 					<button type="button" className="flex items-center">
 						<span className="">
