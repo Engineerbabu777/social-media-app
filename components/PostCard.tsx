@@ -6,32 +6,42 @@ import Link from 'next/link'
 import ReactTimeAgo from 'react-time-ago'
 import { UserContext } from '@/context/userContext'
 
-export default function PostCard ({ content ,profiles:profile,created_at}: {created_at:any, content: string,profiles:any }) {
+export default function PostCard ({
+  content,
+  profiles: profile,
+  created_at,
+  photos
+}: {
+  created_at: any,
+  content: string,
+  photos: any,
+  profiles: any
+}) {
   const [showDropDown, setShowDropDown] = useState < boolean > (false)
 
-  const {profile:myProfile} = useContext(UserContext);
+  const { profile: myProfile } = useContext(UserContext)
 
   return (
     <Card>
       <div className='flex gap-2'>
         <div className=''>
           <Link href={'/profile'}>
-            <Avatar url={profile.avatar}/>
+            <Avatar url={profile?.avatar} />
           </Link>
         </div>
         <div className='grow'>
           <p className=''>
             <Link
-              href={'/profile'}
+              href={'/profile/'+myProfile?.id}
               className='font-semibold hover:underline hover:text-opacity-40'
             >
               {profile?.name}
             </Link>{' '}
             shared a <span className='text-[#2191FA]'>album</span>
           </p>
-          <p className='text-sm text-gray-400'>
+          {created_at && <p className='text-sm text-gray-400'>
             <ReactTimeAgo date={created_at} />
-          </p>
+          </p>}
         </div>
         z
         <div>
@@ -182,12 +192,19 @@ export default function PostCard ({ content ,profiles:profile,created_at}: {crea
         </div>
       </div>
       <div className=''>
-        <p className='my-3 text-sm'>
-         {content}
-        </p>
-        <div className='rounded-md overflow-hidden w-full'>
+        <p className='my-3 text-sm'>{content}</p>
+        {photos?.length > 0 && (
+          <div className='flex gap-4'>
+            {photos?.map((photo: any) => (
+              <div className='' key={photo}>
+                <img src={photo} alt='some' className='rounded-md' />
+              </div>
+            ))}
+          </div>
+        )}
+        {/* <div className='rounded-md overflow-hidden w-full'>
           <img src='/album-1.avif' alt='text-alt' className='w-full' />
-        </div>
+        </div> */}
       </div>
 
       {/* BUTTONS !! */}
@@ -256,7 +273,7 @@ export default function PostCard ({ content ,profiles:profile,created_at}: {crea
       {/* COMMENTS !! */}
       <div className='mt-2 flex gap-3'>
         <div className=''>
-          <Avatar url={myProfile?.avatar}/>
+          <Avatar url={myProfile?.avatar} />
         </div>
         <div className='grow relative border rounded-full '>
           <textarea
