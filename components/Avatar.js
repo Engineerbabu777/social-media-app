@@ -1,38 +1,31 @@
-import { useState } from "react";
+import {uploadUserProfileImage} from "../helpers/user";
+import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
+import {useState} from "react";
 import Preloader from "./Preloader";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 
-type Props = {
-  big?: boolean;
-  url: string;
-  editable:boolean;
-  onChange:() => void;
-}
-
-export default function Avatar ({ big = false, url,editable,onChange }: Props) {
-    const [isUploading,setIsUploading] = useState(false);
-    const supabase = useSupabaseClient();
-    const session = useSession();
-    async function handleAvatarChange(ev) {
-      const file = ev.target.files?.[0];
-      if (file) {
-        setIsUploading(true);
-        await uploadUserProfileImage(supabase, session.user.id, file, 'avatars', 'avatar');
-        setIsUploading(false);
-        if (onChange) onChange();
-      }
+export default function Avatar({size,url,editable,onChange}) {
+  const supabase = useSupabaseClient();
+  const session = useSession();
+  const [isUploading,setIsUploading] = useState(false);
+  async function handleAvatarChange(ev) {
+    const file = ev.target.files?.[0];
+    if (file) {
+      setIsUploading(true);
+      await uploadUserProfileImage(supabase, session.user.id, file, 'avatars', 'avatar');
+      setIsUploading(false);
+      if (onChange) onChange();
     }
+  }
+  let width = 'w-12';
+  if (size === 'lg') {
+    width = 'w-24 md:w-36';
+  }
   return (
-    <>
-      <div
-        className={
-          ' rounded-full overflow-hidden relative' +
-          (big ? ' w-32 h-32 ' : ' w-12 h-12')
-        }
-      >
-        <img src={url || '/user-1.avif'} alt={'text'} className='w-full' />
-
-        {isUploading && (
+    <div className={`${width} relative`}>
+      <div className="rounded-full overflow-hidden">
+        <img src={url} alt="" className="w-full"/>
+      </div>
+      {isUploading && (
         <div className="absolute inset-0 flex items-center bg-white bg-opacity-50 rounded-full">
           <div className="inline-block mx-auto">
             <Preloader />
@@ -48,7 +41,6 @@ export default function Avatar ({ big = false, url,editable,onChange }: Props) {
           </svg>
         </label>
       )}
-      </div>
-    </>
-  )
+    </div>
+  );
 }
